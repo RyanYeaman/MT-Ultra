@@ -1,5 +1,7 @@
 const canvas = document.getElementById("game-canvas");
 const cxt = canvas.getContext("2d");
+const PUNCH_COOLDOWN = 1000; // Cooldown in milliseconds (1 second)
+const movementStep = 2; // Adjust movement step for smooth movement
 
 cxt.fillStyle = "black";
 cxt.fillRect(0, 0, 900, 500);
@@ -13,6 +15,7 @@ class Sprite {
     this.health = 100;
     this.healthBarW = 50;
     this.healthBarHeight = 5;
+    this.canPunch = true;
   }
 
   draw() {
@@ -37,6 +40,10 @@ class Sprite {
   throwPunch(opponent) {
     const punchReach = 90;
 
+    if (!this.canPunch) {
+      console.log("this punch is on cooldown");
+      return;
+    }
     if (
       this.position.x < opponent.position.x + punchReach &&
       this.position.x + punchReach > opponent.position.x
@@ -47,13 +54,19 @@ class Sprite {
     } else {
       console.log("Punch missed.");
     }
+
+    this.canPunch = false;
+
+    setTimeout(() => {
+      this.canPunch = true;
+    }, this.punchCooldown);
   }
 
   moveLeft() {
-    if (this.position.x > 0) this.position.x -= 15;
+    if (this.position.x > 0) this.position.x -= 2;
   }
   moveRight() {
-    if (this.position.x < canvas.width) this.position.x += 15;
+    if (this.position.x < canvas.width) this.position.x += 2;
   }
 }
 
@@ -73,25 +86,39 @@ const player2 = new Sprite(
   { x: 490, y: 10 }
 );
 
-player1.draw();
-player2.draw();
+document.addEventListener("keydown", handleKeyDown);
+document.addEventListener("keyup", handleKeyUp);
 
-document.addEventListener("keydown", (event) => {
-  if (event.key == "a") {
-    player1.moveLeft();
-    render();
-  } else if (event.key == "d") {
-    player1.moveRight();
-    render();
-  } else if (event.key == "p") {
+function handleKeyDown(event) {
+  if (event.key === "a") {
+    player1.isMovingLeft = true;
+  } else if (event.key === "d") {
+    player1.isMovingRight = true;
+  }
+}
+
+function handleKeyUp(event) {
+  if (event.key === "a" || event.key === "d") {
+    player1.isMovingLeft = false;
+    player1.isMovingRight = false;
+  } else if (event.key === "p" && player1.canPunch) {
     player1.throwPunch(player2);
   }
-});
+}
 
-function clearCanvas() {
-  cxt.clearRect(0, 0, canvas.width, canvas.height);
-  cxt.fillStyle = "black";
-  cxt.fillRect(0, 0, 900, 500);
+function gameLoop(timestamp) {
+  updateGameLogic();
+  render();
+  requestAnimationFrame(gameLoop);
+}
+
+function updateGameLogic() {
+  if (player1.isMovingLeft) {
+    player1.moveLeft(movementStep);
+  }
+  if (player1.isMovingRight) {
+    player1.moveRight(movementStep);
+  }
 }
 
 function render() {
@@ -99,3 +126,11 @@ function render() {
   player1.draw();
   player2.draw();
 }
+
+function clearCanvas() {
+  cxt.clearRect(0, 0, canvas.width, canvas.height);
+  cxt.fillStyle = "black";
+  cxt.fillRect(0, 0, 900, 500);
+}
+
+requestAnimationFrame(gameLoop);
