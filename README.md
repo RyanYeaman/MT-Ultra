@@ -1,7 +1,7 @@
 # Muay Thai Ultra (MT-Ultra) Vision
+![MT-ULTRA](https://github.com/RyanYeaman/MT-Ultra/assets/107305865/c0cbcec3-a46a-45c6-beb8-98e09fa00927)
 
-![MT-ULTRA](https://github.com/RyanYeaman/MT-Ultra/assets/107305865/7c578bec-a304-4066-b62a-5c9c970d9dbf)
-
+\
 ## Introduction
 Muay Thai Ultra, abbreviated as MT-Ultra, is an ambitious 2D fighting game project designed for Muay Thai enthusiasts. While in its early stages of development, this game aims to immerse players in the world of Muay Thai, offering an authentic and thrilling fighting experience.
 
