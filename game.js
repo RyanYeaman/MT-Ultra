@@ -1,13 +1,13 @@
 const canvas = document.getElementById("game-canvas");
 const cxt = canvas.getContext("2d");
-const PUNCH_COOLDOWN = 1000; // Cooldown in milliseconds (1 second)
-const movementStep = 2; // Adjust movement step for smooth movement
+const PUNCH_COOLDOWN = 1000;
+const movementStep = 2;
 
 cxt.fillStyle = "black";
 cxt.fillRect(0, 0, 900, 500);
 
 class Sprite {
-  constructor(position, healthPosition) {
+  constructor(position, healthPosition, imgSrc) {
     this.position = position;
     this.healthPosition = healthPosition;
     this.armLength = 50;
@@ -16,12 +16,16 @@ class Sprite {
     this.healthBarW = 50;
     this.healthBarHeight = 5;
     this.canPunch = true;
+    this.img = new Image();
+    this.img.src = imgSrc;
+    this.img.onload = () => {
+      this.draw();
+    };
   }
 
   draw() {
-    cxt.fillStyle = "red";
-    cxt.fillRect(this.position.x, this.position.y, 50, 150);
-
+    cxt.fillStyle = "transparent";
+    cxt.fillRect(this.position.x, this.position.y, 71, 150);
     cxt.fillRect(
       this.position.x + 50,
       this.position.y + 150 / 2 - this.armWidth / 2,
@@ -29,14 +33,20 @@ class Sprite {
       this.armWidth
     );
 
+    cxt.drawImage(
+      this.img,
+      this.position.x,
+      this.position.y,
+      this.img.width,
+      this.img.height
+    );
+
     this.drawHealthBar();
   }
-
   drawHealthBar() {
     cxt.fillStyle = "green";
     cxt.fillRect(this.healthPosition.x, this.healthPosition.y, 300, 20);
   }
-
   throwPunch(opponent) {
     const punchReach = 90;
 
@@ -59,31 +69,33 @@ class Sprite {
 
     setTimeout(() => {
       this.canPunch = true;
-    }, this.punchCooldown);
+    }, PUNCH_COOLDOWN);
   }
 
   moveLeft() {
-    if (this.position.x > 0) this.position.x -= 2;
+    if (this.position.x > 0) this.position.x -= 4;
   }
   moveRight() {
-    if (this.position.x < canvas.width) this.position.x += 2;
+    if (this.position.x < canvas.width) this.position.x += 4;
   }
 }
 
 const player1 = new Sprite(
   {
-    x: 0,
+    x: 50,
     y: 350,
   },
-  { x: 10, y: 10 }
+  { x: 10, y: 10 },
+  "assets/ryan.svg"
 );
 
 const player2 = new Sprite(
   {
-    x: 750,
+    x: 700,
     y: 350,
   },
-  { x: 490, y: 10 }
+  { x: 490, y: 10 },
+  "assets/ryan2.svg"
 );
 
 document.addEventListener("keydown", handleKeyDown);
